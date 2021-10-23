@@ -5,14 +5,14 @@ const db = require('./../db');
 
 router.post('/users/:id/update', async (req, res) => {
 	try {
-		const cursor = await db.userCollection.updateOne({
+		const cursor = await db.collection('user').updateOne({
 			_id: req.params.id
 		}, {
 			firstName: req.body.firstName,
 			lastName: req.body.lastName
 		});
 
-		res.status(200).send(cursor);
+		res.status(200).json(cursor);
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();
@@ -22,7 +22,7 @@ router.post('/users/:id/update', async (req, res) => {
 
 router.post('/users/:id/delete', async (req, res) => {
 	try {
-		const cursor = await db.userCollection.deleteOne({
+		const cursor = await db.collection('user').deleteOne({
 			_id: req.params.id
 		});
 
