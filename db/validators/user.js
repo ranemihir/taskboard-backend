@@ -37,12 +37,16 @@ module.exports = {
 				},
 				projectRoleIds: {
 					bsonType: 'array',
-					description: 'an array of projec role ids',
+					description: 'an array of project role ids',
 					items: {
 						bsonType: 'objectId',
 						description: 'must be a valid projectRoleId',
 						uniqueItems: true
 					}
+				},
+				token: {
+					bsonType: 'string',
+					description: 'must be a string'
 				}
 			},
 			additionalProperties: false
