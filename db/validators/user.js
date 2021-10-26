@@ -6,7 +6,8 @@ module.exports = {
 				'firstName',
 				'lastName',
 				'email',
-				'encryptedPassword'
+				'encryptedPassword',
+				'token'
 			],
 			properties: {
 				firstName: {

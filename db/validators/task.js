@@ -4,9 +4,13 @@ module.exports = {
 			bsonType: 'object',
 			required: [
 				'title',
+				'projectId',
 				'statusId'
 			],
 			properties: {
+				projectId: {
+					bsonType: 'objectId',
+				},
 				title: {
 					bsonType: 'string',
 					minLength: 1,

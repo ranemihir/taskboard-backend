@@ -4,8 +4,6 @@ module.exports = {
 			bsonType: 'object',
 			required: [
 				'name',
-				'taskIds',
-				'statuses'
 			],
 			properties: {
 				name: {
@@ -48,7 +46,8 @@ module.exports = {
 								maximum: 20
 							}
 						}
-					}
+					},
+					maxItems: 8
 				}
 			},
 		}

@@ -1,9 +1,9 @@
 const { Router } = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const db = require('./../db');
-const ObjectId = require('mongodb').ObjectId;
 const authRouter = Router();
+const getProjectRoles = require('./../db/project_roles_data');
+const { User } = require('./../model');
 
 authRouter.post('/signup', async (req, res) => {
 	try {
@@ -13,28 +13,24 @@ authRouter.post('/signup', async (req, res) => {
 			return res.status(400).send('All field are required');
 		}
 
-		const findUserCursor = await db.collection('user').find({ email });
+		const exisitingUser = await User.getByEmail(email);
 
-		if ((await findUserCursor.count()) > 0) {
+		if (exisitingUser) {
 			return res.status(409).send('User already exists. Please login');
 		}
 
 		const encryptedPassword = await bcrypt.hash(password, 10);
 
-		const insertUserCursor = await db.collection('user').insertOne({
+		const user = await User.create(
 			firstName,
 			lastName,
 			email,
 			encryptedPassword
-		});
-
-		if (!insertUserCursor.acknowledged) {
-			throw new Error('Error occurred while inserting document');
-		}
+		);
 
 		const token = jwt.sign(
 			{
-				userId: insertUserCursor.insertedId,
+				userId: user._id,
 				email
 			},
 			process.env.TOKEN_KEY,
@@ -43,18 +39,10 @@ authRouter.post('/signup', async (req, res) => {
 			}
 		);
 
-		const updateUserCursor = await db.collection('user').updateOne({
-			_id: new ObjectId(insertUserCursor.insertedId)
-		}, {
-			$set: { token }
-		});
-
-		if (!updateUserCursor.acknowledged) {
-			throw new Error('Error occurred while updating document');
-		}
+		await User.updateToken(user._id, token);
 
 		res.status(200).json({
-			id: insertUserCursor.insertedId,
+			_id: user._id,
 			firstName,
 			lastName,
 			email,
@@ -70,13 +58,11 @@ authRouter.post('/login', async (req, res) => {
 	try {
 		const { email, password } = req.body;
 
-		const findUserCursor = db.collection('user').find({ email });
+		const user = await User.getByEmail(email);
 
-		if ((await findUserCursor.count()) === 0) {
+		if (!user) {
 			return res.status(400).send('Email does not exist');
 		}
-
-		const user = await findUserCursor.next();
 
 		if (!(await bcrypt.compare(password, user.encryptedPassword))) {
 			return res.status(400).send('Invalid password');
@@ -93,20 +79,22 @@ authRouter.post('/login', async (req, res) => {
 			}
 		);
 
-		await db.collection('user').updateOne({
-			_id: new ObjectId(user._id)
-		}, {
-			$set: { token }
-		});
+		await User.updateToken(user._id, token);
 
-		res.status(200).json(user);
+		const projectRoles = await getProjectRoles(user._id);
+
+		res.status(200).json({
+			...user,
+			token,
+			projectRoles
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();
 	}
 });
 
-const verifyToken = async (req, res, next) => {
+const verifyToken = (req, res, next) => {
 	try {
 		const token = req.headers['x-access-token'];
 
@@ -114,8 +102,19 @@ const verifyToken = async (req, res, next) => {
 			return res.status(403).send('Access token is required for authentication');
 		}
 
-		const decodedPayload = jwt.verify(token, process.env.TOKEN_KEY);
-		req.user = decodedPayload;
+		let decodedPayload;
+
+		try {
+			decodedPayload = jwt.verify(token, process.env.TOKEN_KEY);
+		} catch (err) {
+			console.error(err);
+			return res.status(401).send('Invalid access token provided');
+		}
+
+		req.user = {
+			_id: decodedPayload.userId,
+			email: decodedPayload.email
+		};
 
 		next();
 	} catch (err) {

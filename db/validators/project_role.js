@@ -5,8 +5,7 @@ module.exports = {
 			required: [
 				'userId',
 				'projectId',
-				'roleName',
-				'statusIds'
+				'name',
 			],
 			properties: {
 				userId: {
@@ -15,12 +14,12 @@ module.exports = {
 				projectId: {
 					bsonType: 'objectId',
 				},
-				roleName: {
+				name: {
 					bsonType: 'string',
 					minLength: 3,
 					maxLength: 30
 				},
-				statusIds: {
+				authorisedStatusIds: {
 					bsonType: 'array',
 					items: {
 						bsonType: 'objectId',
