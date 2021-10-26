@@ -1,4 +1,4 @@
-const db = require('./../db');
+const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
 
 async function create(firstName, lastName, email, encryptedPassword, token) {
@@ -24,11 +24,11 @@ async function get(userId) {
 		_id: new ObjectId(userId)
 	});
 
-	if ((await findUserCursor.count()) === 0) {
+	const user = await findUserCursor.next();
+
+	if (user == null) {
 		return false;
 	}
-
-	const user = await findUserCursor.next();
 
 	return user;
 }
@@ -38,15 +38,14 @@ async function getByEmail(email) {
 		email
 	});
 
-	if ((await findUserCursor.count()) === 0) {
+	const user = await findUserCursor.next();
+
+	if (user == null) {
 		return false;
 	}
 
-	const user = await findUserCursor.next();
-
 	return user;
 }
-
 
 async function update(userId, firstName, lastName, email, encryptedPassword) {
 	const updateUserCursor = await db.collection('user').updateOne({

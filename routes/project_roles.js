@@ -1,21 +1,17 @@
 const { Router } = require('express');
 const router = Router();
-const { Project, ProjectRole } = require('./../model');
+const { ProjectRole } = require('./../model');
 
 router.post('project_role/0/create', async (req, res) => {
 	try {
 		const userId = req.user._id;
-		const { projectId, projectRoleType } = req.body;
+		const { projectId } = req.body;
 
-		if (!(projectId && projectRoleType)) {
-			return res.status(400).send('Invalid parameters provided');
+		if (!projectId) {
+			return res.status(400).send('projectId not provided');
 		}
 
-		if (!Object.keys(ProjectRole.ProjectRoleType).includes(projectRoleType)) {
-			return res.status(400).send('Project role type is invalid');
-		}
-
-		const createProjectResult = await ProjectRole.create(userId, projectId, projectRoleType);
+		const createProjectResult = await ProjectRole.create(userId, projectId);
 
 		res.status(200).json(createProjectResult);
 	} catch (err) {
@@ -36,7 +32,7 @@ router.get('project_role/:_id', async (req, res) => {
 		}
 
 		if (projectRole.userId != userId) {
-			return res.status(400).send('Unauthorised request');
+			return res.status(401).send('Unauthorised request');
 		}
 
 		res.status(200).json(projectRole);
@@ -46,13 +42,17 @@ router.get('project_role/:_id', async (req, res) => {
 	}
 });
 
-router.post('project_role/:_id/update', async (req, res) => {
+router.post('project_role/:_id/update_authorised_statuses', async (req, res) => {
 	try {
-		const userId = req.user._id;
+		// const userId = req.user._id;
 		const projectRoleId = req.params._id;
+		const { authorisedStatuses } = req.body;
 
-	
+		await ProjectRole.updateAuthorisedStatuses(projectRoleId, authorisedStatuses);
 
+		res.status(200).json({
+			_id: projectRoleId
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();

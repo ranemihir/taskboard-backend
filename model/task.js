@@ -1,11 +1,14 @@
-const db = require('./../db');
+const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
 
-async function create(title, projectId, statusId) {
+async function create(title, description, priority, dueDate, projectId, statusId) {
 	const createTaskCursor = await db.collection('task').insertOne({
 		title,
 		projectId: new ObjectId(projectId),
-		statusId: new ObjectId(statusId)
+		statusId: new ObjectId(statusId),
+		description,
+		priority,
+		dueDate
 	});
 
 	if (!createTaskCursor.acknowledged) {

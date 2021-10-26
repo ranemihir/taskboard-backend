@@ -4,6 +4,7 @@ module.exports = {
 			bsonType: 'object',
 			required: [
 				'name',
+				'adminUserId'
 			],
 			properties: {
 				name: {
@@ -15,6 +16,10 @@ module.exports = {
 					bsonType: 'string',
 					minLength: 1,
 					maxLength: 200
+				},
+				adminUserId: {
+					bsonType: 'objectId',
+					uniqueItems: true
 				},
 				taskIds: {
 					bsonType: 'array',

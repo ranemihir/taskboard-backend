@@ -1,10 +1,11 @@
-const db = require('./../db');
+const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
 
 async function create(name, description, userId) {
 	const createProjectCursor = await db.collection('project').insertOne({
 		name,
-		description
+		description,
+		adminUserId: new ObjectId(userId)
 	});
 
 	if (!createProjectCursor.acknowledged) {
@@ -41,9 +42,23 @@ async function get(projectId) {
 	return project;
 }
 
-async function update(projectId, name, description) {
+async function checkIfUserIsAdmin(projectId, userId) {
+	const findAdminCursor = await db.collection('project').find({
+		_id: new ObjectId(projectId),
+		adminUserId: new ObjectId(userId)
+	});
+
+	if ((await findAdminCursor.count()) === 0) {
+		return false;
+	}
+
+	return true;
+}
+
+async function update(projectId, userId, name, description) {
 	const updateProjectCursor = await db.collection('project').updateOne({
-		_id: new ObjectId(projectId)
+		_id: new ObjectId(projectId),
+		adminUserId: new ObjectId(userId)
 	}, {
 		$set: {
 			name,
@@ -58,9 +73,10 @@ async function update(projectId, name, description) {
 	return true;
 }
 
-async function del(projectId) {
+async function del(projectId, userId) {
 	const deleteProjectCursor = await db.collection('project').deleteOne({
-		_id: new ObjectId(projectId)
+		_id: new ObjectId(projectId),
+		adminUserId: new ObjectId(userId)
 	});
 
 	if (!deleteProjectCursor.acknowledged) {
@@ -74,6 +90,7 @@ async function del(projectId) {
 module.exports = {
 	create,
 	get,
+	checkIfUserIsAdmin,
 	update,
 	del
 };

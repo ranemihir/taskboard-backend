@@ -52,4 +52,7 @@ async function connectAndConfigureDB() {
 connectAndConfigureDB();
 const db = client.db(process.env.MONGO_DBNAME);
 
-module.exports = db;
+module.exports = {
+	client,
+	db
+};

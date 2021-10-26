@@ -9,7 +9,7 @@ router.post('/projects/0/create', async (req, res) => {
 		const userId = req.user._id;
 
 		if (!name) {
-			return res.status(400).send('Invalid parameters provided');
+			return res.status(400).send('"name" not provided');
 		}
 
 		const createProjectResult = await Project.create(name, description, userId);
@@ -27,9 +27,9 @@ router.get('/projects/:_id', async (req, res) => {
 		const projectId = req.params._id;
 		const userId = req.user._id;
 
-		if ((await Project.get(projectId)) && (await ProjectRole.checkIfUserIsMember(userId, projectId))) {
-			const project = await Project.get(projectId);
+		const project = await Project.get(projectId);
 
+		if (project && (await ProjectRole.find(userId, projectId))) {
 			return res.status(200).json(project);
 		}
 
@@ -50,16 +50,11 @@ router.post('/projects/:_id/update', async (req, res) => {
 			return res.status(400).send('Invalid parameters provided');
 		}
 
+		await Project.update(projectId, userId, name, description);
 
-		if ((await Project.get(projectId)) && (await ProjectRole.checkIfUserIsAdmin(userId, projectId))) {
-			await Project.update(projectId, name, description);
-
-			return res.status(200).json({
-				_id: projectId,
-			});
-		}
-
-		res.status(200).json();
+		res.status(200).json({
+			_id: projectId,
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();
@@ -71,15 +66,11 @@ router.post('/projects/:_id/delete', async (req, res) => {
 		const projectId = req.params._id;
 		const userId = req.user._id;
 
-		if ((await Project.get(projectId)) && (await ProjectRole.checkIfUserIsAdmin(userId, projectId))) {
-			await Project.del(projectId);
+		await Project.del(projectId, userId);
 
-			return res.status(200).json({
-				_id: projectId
-			});
-		}
-
-		res.status(200).send();
+		return res.status(200).json({
+			_id: projectId
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();

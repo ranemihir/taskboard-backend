@@ -1,16 +1,10 @@
-const db = require('./../db');
+const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
 
-const ProjectRoleType = {
-	ADMIN: 'ADMIN',
-	MEMBER: 'MEMBER'
-};
-
-async function create(userId, projectId, name) {
+async function create(userId, projectId) {
 	const createProjectRoleCursor = await db.collection('project_role').insertOne({
 		userId: new ObjectId(userId),
 		projectId: new ObjectId(projectId),
-		name
 	});
 
 	if (!createProjectRoleCursor.acknowledged) {
@@ -69,38 +63,6 @@ async function getAllProjectRolesOfUser(userId) {
 	return allProjectRolesOfUser;
 }
 
-async function checkIfUserIsAdmin(userId, projectId) {
-	const findProjectRoleCursor = db.collection('project_role').find({
-		userId: new ObjectId(userId),
-		projectId: new ObjectId(projectId)
-	});
-
-	if ((await findProjectRoleCursor.count()) === 0) {
-		return false;
-	}
-
-	const projectRole = await findProjectRoleCursor.next();
-
-	if (projectRole.name === ProjectRole.ADMIN) {
-		return true;
-	}
-
-	return false;
-}
-
-async function checkIfUserIsMember(userId, projectId) {
-	const findProjectRoleCursor = db.collection('project_role').find({
-		userId: new ObjectId(userId),
-		projectId: new ObjectId(projectId)
-	});
-
-	if ((await findProjectRoleCursor.count()) === 0) {
-		return false;
-	}
-
-	return true;
-}
-
 async function hasAuthorisedStatus(projectRoleId, authorisedStatusId) {
 	const findAuthorisedStatusCursor = db.collection('project_role').find({
 		_id: new ObjectId(projectRoleId),
@@ -114,22 +76,6 @@ async function hasAuthorisedStatus(projectRoleId, authorisedStatusId) {
 	const projectRole = await findAuthorisedStatusCursor.next();
 
 	return projectRole;
-}
-
-async function updateRole(projectRoleId, name) {
-	const updateProjectRoleCursor = await db.collection('project_role').updateOne({
-		_id: new ObjectId(projectRoleId)
-	}, {
-		$set: {
-			name
-		}
-	});
-
-	if (!updateProjectRoleCursor.acknowledged) {
-		throw new Error('Error occurred while updating project role');
-	}
-
-	return true;
 }
 
 async function updateAuthorisedStatuses(projectRoleId, authorisedStatusIds) {
@@ -167,11 +113,7 @@ module.exports = {
 	find,
 	getAllProjectRolesOfProject,
 	getAllProjectRolesOfUser,
-	checkIfUserIsAdmin,
-	checkIfUserIsMember,
 	hasAuthorisedStatus,
-	updateRole,
 	updateAuthorisedStatuses,
-	del,
-	ProjectRoleType
+	del
 };
