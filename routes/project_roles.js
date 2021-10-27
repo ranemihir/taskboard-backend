@@ -2,14 +2,10 @@ const { Router } = require('express');
 const router = Router();
 const { ProjectRole } = require('./../model');
 
-router.post('project_role/0/create', async (req, res) => {
+router.post('projects/:projectId/project_role/0/create', async (req, res) => {
 	try {
 		const userId = req.user._id;
-		const { projectId } = req.body;
-
-		if (!projectId) {
-			return res.status(400).send('projectId not provided');
-		}
+		const { projectId } = req.params;
 
 		const createProjectResult = await ProjectRole.create(userId, projectId);
 
@@ -20,7 +16,7 @@ router.post('project_role/0/create', async (req, res) => {
 	}
 });
 
-router.get('project_role/:_id', async (req, res) => {
+router.get('projects/:projectId/project_role/:_id', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const projectRoleId = req.params._id;
@@ -42,7 +38,7 @@ router.get('project_role/:_id', async (req, res) => {
 	}
 });
 
-router.post('project_role/:_id/update_authorised_statuses', async (req, res) => {
+router.post('projects/:projectId/project_role/:_id/update', async (req, res) => {
 	try {
 		// const userId = req.user._id;
 		const projectRoleId = req.params._id;
@@ -59,7 +55,7 @@ router.post('project_role/:_id/update_authorised_statuses', async (req, res) => 
 	}
 });
 
-router.post('project_role/:_id/delete', async (req, res) => {
+router.post('projects/:projectId/project_role/:_id/delete', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const projectRoleId = req.params._id;

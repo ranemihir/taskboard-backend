@@ -12,19 +12,8 @@ async function create(name, description, userId) {
 		throw new Error('Error occurred while creating a new project');
 	}
 
-	const createProjectRoleCursor = await db.collection('project_role').insertOne({
-		userId: new ObjectId(userId),
-		projectId: new ObjectId(createProjectCursor.insertedId),
-		name: 'admin',
-	});
-
-	if (!createProjectRoleCursor.acknowledged) {
-		throw new Error('Error occurred while creating a new project role');
-	}
-
 	return {
 		projectId: createProjectCursor.insertedId,
-		projectRoleId: createProjectRoleCursor.insertedId
 	};
 }
 

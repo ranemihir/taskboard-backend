@@ -63,9 +63,10 @@ async function getAllProjectRolesOfUser(userId) {
 	return allProjectRolesOfUser;
 }
 
-async function hasAuthorisedStatus(projectRoleId, authorisedStatusId) {
+async function hasAuthorisedStatus(userId, projectId, authorisedStatusId) {
 	const findAuthorisedStatusCursor = db.collection('project_role').find({
-		_id: new ObjectId(projectRoleId),
+		userId: new ObjectId(userId),
+		projectId: new ObjectId(projectId),
 		authorisedStatusIds: new ObjectId(authorisedStatusId)
 	});
 

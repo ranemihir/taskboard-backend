@@ -1,14 +1,11 @@
 const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
 
-async function create(title, description, priority, dueDate, projectId, statusId) {
+async function create(title, projectId, statusId) {
 	const createTaskCursor = await db.collection('task').insertOne({
 		title,
 		projectId: new ObjectId(projectId),
-		statusId: new ObjectId(statusId),
-		description,
-		priority,
-		dueDate
+		statusId: new ObjectId(statusId)
 	});
 
 	if (!createTaskCursor.acknowledged) {
@@ -32,6 +29,19 @@ async function get(taskId) {
 	const task = await findTaskCursor.next();
 
 	return task;
+}
+
+async function checkIfTaskIsAssigned(taskId, userId) {
+	const findAssignedTaskCursor = await db.collection('task').find({
+		_id: new ObjectId(taskId),
+		assignedTo: new Object(userId)
+	});
+
+	if ((await findAssignedTaskCursor.next()) == null) {
+		return false;
+	}
+
+	return true;
 }
 
 async function getAllAssignedTasks(userId) {
@@ -122,6 +132,7 @@ async function del(taskId) {
 module.exports = {
 	create,
 	get,
+	checkIfTaskIsAssigned,
 	getAllAssignedTasks,
 	getAssignedTasksFromProject,
 	update,
