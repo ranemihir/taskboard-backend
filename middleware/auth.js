@@ -84,7 +84,10 @@ authRouter.post('/login', async (req, res) => {
 		const projectRoles = await getProjectRoles(user._id);
 
 		res.status(200).json({
-			...user,
+			_id: user._id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
 			token,
 			projectRoles
 		});

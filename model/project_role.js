@@ -108,6 +108,18 @@ async function del(projectRoleId, userId) {
 	return true;
 }
 
+async function remove(projectRoleId) {
+	const deleteProjectRoleCursor = await db.collection('project_role').deleteOne({
+		_id: new ObjectId(projectRoleId)
+	});
+
+	if (!deleteProjectRoleCursor.acknowledged) {
+		throw new Error('Error occurred while deleting project role');
+	}
+
+	return true;
+}
+
 module.exports = {
 	create,
 	get,
@@ -116,5 +128,6 @@ module.exports = {
 	getAllProjectRolesOfUser,
 	hasAuthorisedStatus,
 	updateAuthorisedStatuses,
-	del
+	del,
+	remove
 };

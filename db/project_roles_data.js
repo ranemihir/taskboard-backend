@@ -1,4 +1,4 @@
-const db = require('.');
+const { db } = require('./index');
 const ObjectId = require('mongodb').ObjectId;
 
 
