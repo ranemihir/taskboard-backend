@@ -33,6 +33,18 @@ async function get(userId) {
 	return user;
 }
 
+async function getUsers(userIds) {
+	const findUserCursor = db.collection('user').find({
+		_id: {
+			$in: userIds.map(userId => new ObjectId(userId))
+		}
+	});
+
+	const users = await findUserCursor.toArray();
+
+	return users;
+}
+
 async function getByEmail(email) {
 	const findUserCursor = db.collection('user').find({
 		email
@@ -98,6 +110,7 @@ async function del(userId) {
 module.exports = {
 	create,
 	get,
+	getUsers,
 	getByEmail,
 	update,
 	updateToken,

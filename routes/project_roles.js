@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const { ProjectRole, Project } = require('./../model');
+const { ProjectRole, Project, User } = require('./../model');
 
 router.post('project_roles/0/create', async (req, res) => {
 	try {
@@ -16,22 +16,51 @@ router.post('project_roles/0/create', async (req, res) => {
 	}
 });
 
-router.get('project_roles/:projectRoleId', async (req, res) => {
+router.get('project/:projectId/project_roles', async (req, res) => {
 	try {
 		const userId = req.user._id;
-		const { projectRoleId } = req.params;
+		const { projectId } = req.params;
 
-		const projectRole = await ProjectRole.get(projectRoleId);
+		const projectRoles = await ProjectRole.getAllProjectRolesOfProject(projectId);
+		const userIds = projectRoles.map(projectRole => projectRole.userId);
 
-		if (!projectRole) {
-			return res.status(404).status('Invalid project role id');
-		}
-
-		if (projectRole.userId != userId) {
+		if (!userIds.includes(userId)) {
 			return res.status(401).send('Unauthorised request');
 		}
 
-		res.status(200).json(projectRole);
+		const usersMap = await (await User.getUsers(userIds)).map(u => {
+			const userMap = {};
+
+			userMap[u._id] = {
+				firstName: u.firstName,
+				lastName: u.lastName
+			};
+
+			return userMap;
+		});
+
+		const projectRolesResult = projectRoles.map(projectRole => {
+			const userProperties = usersMap[projectRole.userId];
+
+			return {
+				...projectRole,
+				userProperties
+			};
+		});
+
+		res.status(200).json(projectRolesResult);
+	} catch (err) {
+		console.error(err);
+		res.status(500).end();
+	}
+});
+
+router.get('project_roles', async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const projectRoles = await ProjectRole.getAllProjectRolesOfUser(userId);
+
+		res.status(200).json(projectRoles);
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();
