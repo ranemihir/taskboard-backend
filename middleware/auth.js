@@ -2,7 +2,6 @@ const { Router } = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const authRouter = Router();
-const getProjectRoles = require('./../db/project_roles_data');
 const { User } = require('./../model');
 
 authRouter.post('/signup', async (req, res) => {
@@ -81,15 +80,13 @@ authRouter.post('/login', async (req, res) => {
 
 		await User.updateToken(user._id, token);
 
-		const projectRoles = await getProjectRoles(user._id);
 
 		res.status(200).json({
 			_id: user._id,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			email: user.email,
-			token,
-			projectRoles
+			token
 		});
 	} catch (err) {
 		console.error(err);

@@ -1,11 +1,11 @@
 const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
 
-async function create(name, description, userId) {
+async function create(name, description, adminUserId) {
 	const createProjectCursor = await db.collection('project').insertOne({
 		name,
 		description,
-		adminUserId: new ObjectId(userId)
+		adminUserIds: [new ObjectId(adminUserId)]
 	});
 
 	if (!createProjectCursor.acknowledged) {
@@ -44,14 +44,15 @@ async function checkIfUserIsAdmin(projectId, userId) {
 	return true;
 }
 
-async function update(projectId, userId, name, description) {
+async function update(projectId, adminUserId, adminUserIds, name, description) {
 	const updateProjectCursor = await db.collection('project').updateOne({
 		_id: new ObjectId(projectId),
-		adminUserId: new ObjectId(userId)
+		adminUserIds: new ObjectId(adminUserId)
 	}, {
 		$set: {
 			name,
-			description
+			description,
+			adminUserIds: adminUserIds.map(userId => new ObjectId(userId))
 		}
 	});
 
@@ -62,10 +63,10 @@ async function update(projectId, userId, name, description) {
 	return true;
 }
 
-async function del(projectId, userId) {
+async function del(projectId, adminUserId) {
 	const deleteProjectCursor = await db.collection('project').deleteOne({
 		_id: new ObjectId(projectId),
-		adminUserId: new ObjectId(userId)
+		adminUserId: new ObjectId(adminUserId)
 	});
 
 	if (!deleteProjectCursor.acknowledged) {

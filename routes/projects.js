@@ -14,7 +14,20 @@ router.post('/projects/0/create', async (req, res) => {
 
 		const createProjectResult = await Project.create(name, description, userId);
 
-		res.status(200).json(createProjectResult);
+		const createProjectRoleResult = await ProjectRole.create(userId, createProjectResult.projectId);
+
+		res.status(200).json({
+			project: {
+				_id: createProjectResult.projectId,
+				userId,
+				adminUserIds: [userId]
+			},
+			projectRole: {
+				_id: createProjectRoleResult.projectRoleId,
+				userId,
+				projectId: createProjectResult.projectId
+			}
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();
@@ -43,14 +56,14 @@ router.get('/projects/:_id', async (req, res) => {
 router.post('/projects/:_id/update', async (req, res) => {
 	try {
 		const projectId = req.params._id;
-		const { name, description } = req.body;
+		const { name, description, adminUserIds } = req.body;
 		const userId = req.user._id;
 
 		if (!(name || description)) {
 			return res.status(400).send('Invalid parameters provided');
 		}
 
-		await Project.update(projectId, userId, name, description);
+		await Project.update(projectId, userId, adminUserIds, name, description);
 
 		res.status(200).json({
 			_id: projectId,

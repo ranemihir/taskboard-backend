@@ -11,7 +11,7 @@ async function create(userId, projectId) {
 		throw new Error('Error occurred while inserting project role');
 	}
 
-	return true;
+	return { projectRoleId: createProjectRoleCursor.insertedId };
 }
 
 async function get(projectRoleId) {
