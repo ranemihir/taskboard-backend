@@ -1,8 +1,10 @@
 const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
+const projectRoleCollection = db.collection('project_role');
+
 
 async function create(userId, projectId) {
-	const createProjectRoleCursor = await db.collection('project_role').insertOne({
+	const createProjectRoleCursor = await projectRoleCollection.insertOne({
 		userId: new ObjectId(userId),
 		projectId: new ObjectId(projectId),
 	});
@@ -15,7 +17,7 @@ async function create(userId, projectId) {
 }
 
 async function get(projectRoleId) {
-	const findProjectRoleCursor = db.collection('project_role').find({
+	const findProjectRoleCursor = projectRoleCollection.find({
 		_id: new ObjectId(projectRoleId)
 	});
 
@@ -29,7 +31,7 @@ async function get(projectRoleId) {
 }
 
 async function find(userId, projectId) {
-	const findProjectRoleCursor = db.collection('project_role').find({
+	const findProjectRoleCursor = projectRoleCollection.find({
 		userId: new ObjectId(userId),
 		projectId: new ObjectId(projectId)
 	});
@@ -44,7 +46,7 @@ async function find(userId, projectId) {
 }
 
 async function getAllProjectRolesOfProject(projectId) {
-	const findProjectRolesOfProjectCursor = db.collection('project_role').find({
+	const findProjectRolesOfProjectCursor = projectRoleCollection.find({
 		projectId: new ObjectId(projectId)
 	});
 
@@ -54,7 +56,7 @@ async function getAllProjectRolesOfProject(projectId) {
 }
 
 async function getAllProjectRolesOfUser(userId) {
-	const findProjectRolesOfUserCursor = db.collection('project_role').find({
+	const findProjectRolesOfUserCursor = projectRoleCollection.find({
 		userId: new ObjectId(userId)
 	});
 
@@ -64,7 +66,7 @@ async function getAllProjectRolesOfUser(userId) {
 }
 
 async function hasAuthorisedStatus(userId, projectId, authorisedStatusId) {
-	const findAuthorisedStatusCursor = db.collection('project_role').find({
+	const findAuthorisedStatusCursor = projectRoleCollection.find({
 		userId: new ObjectId(userId),
 		projectId: new ObjectId(projectId),
 		authorisedStatusIds: new ObjectId(authorisedStatusId)
@@ -80,7 +82,7 @@ async function hasAuthorisedStatus(userId, projectId, authorisedStatusId) {
 }
 
 async function updateAuthorisedStatuses(projectRoleId, authorisedStatusIds) {
-	const updateProjectRoleCursor = await db.collection('project_role').updateOne({
+	const updateProjectRoleCursor = await projectRoleCollection.updateOne({
 		_id: new ObjectId(projectRoleId)
 	}, {
 		$set: {
@@ -96,7 +98,7 @@ async function updateAuthorisedStatuses(projectRoleId, authorisedStatusIds) {
 }
 
 async function del(projectRoleId, userId) {
-	const deleteProjectRoleCursor = await db.collection('project_role').deleteOne({
+	const deleteProjectRoleCursor = await projectRoleCollection.deleteOne({
 		_id: new ObjectId(projectRoleId),
 		userId: new ObjectId(userId)
 	});
@@ -109,7 +111,7 @@ async function del(projectRoleId, userId) {
 }
 
 async function remove(projectRoleId) {
-	const deleteProjectRoleCursor = await db.collection('project_role').deleteOne({
+	const deleteProjectRoleCursor = await projectRoleCollection.deleteOne({
 		_id: new ObjectId(projectRoleId)
 	});
 

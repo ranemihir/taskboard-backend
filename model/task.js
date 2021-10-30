@@ -1,8 +1,10 @@
 const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
+const taskCollection = db.collection('task');
+
 
 async function create(title, projectId, statusId) {
-	const createTaskCursor = await db.collection('task').insertOne({
+	const createTaskCursor = await taskCollection.insertOne({
 		title,
 		projectId: new ObjectId(projectId),
 		statusId: new ObjectId(statusId)
@@ -18,7 +20,7 @@ async function create(title, projectId, statusId) {
 }
 
 async function get(taskId) {
-	const findTaskCursor = db.collection('task').find({
+	const findTaskCursor = taskCollection.find({
 		_id: new ObjectId(taskId)
 	});
 
@@ -32,7 +34,7 @@ async function get(taskId) {
 }
 
 async function checkIfTaskIsAssigned(taskId, userId) {
-	const findAssignedTaskCursor = await db.collection('task').find({
+	const findAssignedTaskCursor = await taskCollection.find({
 		_id: new ObjectId(taskId),
 		assignedTo: new Object(userId)
 	});
@@ -45,7 +47,7 @@ async function checkIfTaskIsAssigned(taskId, userId) {
 }
 
 async function getAllAssignedTasks(userId) {
-	const findAssignedTasksCursor = db.collection('task').find({
+	const findAssignedTasksCursor = taskCollection.find({
 		assingedTo: new ObjectId(userId)
 	});
 
@@ -55,7 +57,7 @@ async function getAllAssignedTasks(userId) {
 }
 
 async function getAssignedTasksFromProject(userId, projectId) {
-	const findAssignedTasksCursor = db.collection('task').find({
+	const findAssignedTasksCursor = taskCollection.find({
 		assingedTo: new ObjectId(userId),
 		projectId: new ObjectId(projectId)
 	});
@@ -66,7 +68,7 @@ async function getAssignedTasksFromProject(userId, projectId) {
 }
 
 async function update(taskId, title, description, priority, dueDate) {
-	const updateTaskCursor = await db.collection('task').updateOne({
+	const updateTaskCursor = await taskCollection.updateOne({
 		_id: new ObjectId(taskId)
 	}, {
 		$set: {
@@ -85,7 +87,7 @@ async function update(taskId, title, description, priority, dueDate) {
 }
 
 async function moveTaskToStatusId(taskId, statusId) {
-	const moveTaskCursor = await db.collection('task').updateOne({
+	const moveTaskCursor = await taskCollection.updateOne({
 		_id: new Object(taskId)
 	}, {
 		$set: {
@@ -101,7 +103,7 @@ async function moveTaskToStatusId(taskId, statusId) {
 }
 
 async function assignTask(taskId, assigneeId) {
-	const assignTaskCursor = await db.collection('task').updateOne({
+	const assignTaskCursor = await taskCollection.updateOne({
 		_id: new ObjectId(taskId)
 	}, {
 		$set: {
@@ -117,7 +119,7 @@ async function assignTask(taskId, assigneeId) {
 }
 
 async function del(taskId) {
-	const deleteTaskCursor = await db.collection('task').deleteOne({
+	const deleteTaskCursor = await taskCollection.deleteOne({
 		_id: new ObjectId(taskId)
 	});
 

@@ -26,6 +26,21 @@ async function connectAndConfigureDB() {
 		if (!collectionNames.has('user')) {
 			await db.createCollection('user', userSchema);
 			console.log('"user" collection created');
+
+			await db.createCollection('userView', {
+				viewOn: 'user',
+				pipeline: [
+					{
+						$project: {
+							_id: 1,
+							firstName: 1,
+							lastName: 1
+						}
+					}
+				]
+			});
+
+			console.log('"userView" view created');
 		}
 
 		if (!collectionNames.has('project')) {

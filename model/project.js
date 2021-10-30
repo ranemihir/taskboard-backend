@@ -1,8 +1,10 @@
 const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
+const projectCollection = db.collection('project');
+
 
 async function create(name, description, adminUserId) {
-	const createProjectCursor = await db.collection('project').insertOne({
+	const createProjectCursor = await projectCollection.insertOne({
 		name,
 		description,
 		adminUserIds: [new ObjectId(adminUserId)]
@@ -18,7 +20,7 @@ async function create(name, description, adminUserId) {
 }
 
 async function get(projectId) {
-	const findProjectCursor = db.collection('project').find({
+	const findProjectCursor = projectCollection.find({
 		_id: new ObjectId(projectId)
 	});
 
@@ -32,7 +34,7 @@ async function get(projectId) {
 }
 
 async function checkIfUserIsAdmin(projectId, userId) {
-	const findAdminCursor = await db.collection('project').find({
+	const findAdminCursor = await projectCollection.find({
 		_id: new ObjectId(projectId),
 		adminUserId: new ObjectId(userId)
 	});
@@ -45,7 +47,7 @@ async function checkIfUserIsAdmin(projectId, userId) {
 }
 
 async function update(projectId, adminUserId, adminUserIds, name, description) {
-	const updateProjectCursor = await db.collection('project').updateOne({
+	const updateProjectCursor = await projectCollection.updateOne({
 		_id: new ObjectId(projectId),
 		adminUserIds: new ObjectId(adminUserId)
 	}, {
@@ -64,13 +66,29 @@ async function update(projectId, adminUserId, adminUserIds, name, description) {
 }
 
 async function del(projectId, adminUserId) {
-	const deleteProjectCursor = await db.collection('project').deleteOne({
+	const deleteProjectCursor = await projectCollection.deleteOne({
 		_id: new ObjectId(projectId),
 		adminUserId: new ObjectId(adminUserId)
 	});
 
 	if (!deleteProjectCursor.acknowledged) {
-		throw new Error('Error occurred while updating a project');
+		throw new Error('Error occurred while deleteing a project');
+	}
+
+	const deleteAllProjectRolesOfProjectCursor = await db.collection('project_role').deleteMany({
+		projectId: new ObjectId(projectId)
+	});
+
+	if (!deleteAllProjectRolesOfProjectCursor.acknowledged) {
+		throw new Error('Error occurred while deleting all project roles of a project');
+	}
+
+	const deleteAllTasksOfProjectCursor = db.collection('task').deleteMany({
+		projectId: new Object(projectId)
+	});
+
+	if (!deleteAllTasksOfProjectCursor.acknowledged) {
+		throw new Error('Error occurred while deleting all tasks of a project');
 	}
 
 	return true;

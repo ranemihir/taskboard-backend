@@ -1,8 +1,10 @@
 const { db } = require('./../db');
 const ObjectId = require('mongodb').ObjectId;
+const userView = db.collection('userView');
+const userCollection = db.collection('user');
 
 async function create(firstName, lastName, email, encryptedPassword, token) {
-	const createUserCursor = await db.collection('user').insertOne({
+	const createUserCursor = await userCollection.insertOne({
 		firstName,
 		lastName,
 		email,
@@ -20,7 +22,7 @@ async function create(firstName, lastName, email, encryptedPassword, token) {
 }
 
 async function get(userId) {
-	const findUserCursor = db.collection('user').find({
+	const findUserCursor = userCollection.find({
 		_id: new ObjectId(userId)
 	});
 
@@ -34,7 +36,7 @@ async function get(userId) {
 }
 
 async function getUsers(userIds) {
-	const findUserCursor = db.collection('user').find({
+	const findUserCursor = userView.find({
 		_id: {
 			$in: userIds.map(userId => new ObjectId(userId))
 		}
@@ -46,7 +48,7 @@ async function getUsers(userIds) {
 }
 
 async function getByEmail(email) {
-	const findUserCursor = db.collection('user').find({
+	const findUserCursor = userCollection.find({
 		email
 	});
 
@@ -60,7 +62,7 @@ async function getByEmail(email) {
 }
 
 async function update(userId, firstName, lastName, email, encryptedPassword) {
-	const updateUserCursor = await db.collection('user').updateOne({
+	const updateUserCursor = await userCollection.updateOne({
 		_id: new ObjectId(userId)
 	}, {
 		$set: {
@@ -79,7 +81,7 @@ async function update(userId, firstName, lastName, email, encryptedPassword) {
 }
 
 async function updateToken(userId, token) {
-	const updateUserCursor = await db.collection('user').updateOne({
+	const updateUserCursor = await userCollection.updateOne({
 		_id: new ObjectId(userId)
 	}, {
 		$set: {
@@ -95,7 +97,7 @@ async function updateToken(userId, token) {
 }
 
 async function del(userId) {
-	const deleteUserCursor = await db.collection('user').deleteOne({
+	const deleteUserCursor = await userCollection.deleteOne({
 		_id: new ObjectId(userId)
 	});
 
