@@ -21,21 +21,13 @@ module.exports = {
 					bsonType: 'objectId',
 					uniqueItems: true
 				},
-				taskIds: {
-					bsonType: 'array',
-					items: {
-						bsonType: 'objectId',
-						uniqueItems: true
-					}
-				},
 				statuses: {
 					bsonType: 'array',
 					items: {
 						bsonType: 'object',
 						required: [
 							'_id',
-							'name',
-							'order'
+							'name'
 						],
 						properties: {
 							_id: {
@@ -45,10 +37,6 @@ module.exports = {
 								bsonType: 'string',
 								minLength: 3,
 								maxLength: 40
-							},
-							order: {
-								bsonType: 'int',
-								maximum: 20
 							}
 						}
 					},

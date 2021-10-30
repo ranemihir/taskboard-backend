@@ -8,7 +8,7 @@ router.post('projects/:projectId/tasks/0/create', async (req, res) => {
 		const { title, statusId } = req.body;
 		const { projectId } = req.params;
 
-		if (!(title && statusId)) {
+		if (!title) {
 			return res.status(400).send('All fields are required');
 		}
 

@@ -5,7 +5,6 @@ module.exports = {
 			required: [
 				'title',
 				'projectId',
-				'statusId'
 			],
 			properties: {
 				projectId: {
