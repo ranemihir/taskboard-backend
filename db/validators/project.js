@@ -4,7 +4,7 @@ module.exports = {
 			bsonType: 'object',
 			required: [
 				'name',
-				'adminUserId'
+				'adminUserIds'
 			],
 			properties: {
 				name: {
@@ -17,9 +17,12 @@ module.exports = {
 					minLength: 1,
 					maxLength: 200
 				},
-				adminUserId: {
-					bsonType: 'objectId',
-					uniqueItems: true
+				adminUserIds: {
+					bsonType: 'array',
+					items: {
+						bsonType: 'objectId',
+						uniqueItems: true
+					}
 				},
 				statuses: {
 					bsonType: 'array',
@@ -41,6 +44,13 @@ module.exports = {
 						}
 					},
 					maxItems: 8
+				},
+				invites: {
+					bsonType: 'array',
+					items: {
+						bsonType: 'objectId',
+						uniqueItems: true
+					}
 				}
 			},
 		}
