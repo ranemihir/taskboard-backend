@@ -81,7 +81,7 @@ async function hasAuthorisedStatus(userId, projectId, authorisedStatusId) {
 	return projectRole;
 }
 
-async function updateAuthorisedStatusIds(projectRoleId, authorisedStatusIds) {
+async function update(projectRoleId, authorisedStatusIds) {
 	const updateProjectRoleCursor = await projectRoleCollection.updateOne({
 		_id: new ObjectId(projectRoleId)
 	}, {
@@ -129,7 +129,7 @@ module.exports = {
 	getAllProjectRolesOfProject,
 	getAllProjectRolesOfUser,
 	hasAuthorisedStatus,
-	updateAuthorisedStatusIds,
+	update,
 	del,
 	remove
 };

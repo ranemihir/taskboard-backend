@@ -80,7 +80,7 @@ router.post('project_roles/:projectRoleId/update', async (req, res) => {
 		const { projectRoleId } = req.params;
 		const { authorisedStatusIds } = req.body;
 
-		await ProjectRole.updateAuthorisedStatusIds(projectRoleId, authorisedStatusIds);
+		await ProjectRole.update(projectRoleId, authorisedStatusIds);
 
 		res.status(200).json({
 			_id: projectRoleId,

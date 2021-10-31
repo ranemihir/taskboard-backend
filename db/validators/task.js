@@ -34,7 +34,7 @@ module.exports = {
 					minimum: 1,
 					maximum: 3
 				}
-			},
+			}
 		}
 	}
 };

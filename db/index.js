@@ -43,11 +43,17 @@ async function connectAndConfigureDB() {
 			});
 
 			console.log('"userView" view created');
+
+			await db.collection('user').insertMany(SeedData.users);
+			console.log('"user" seed data inserted');
 		}
 
 		if (!collectionNames.has('project')) {
 			await db.createCollection('project', projectSchema);
 			console.log('"project" collection created');
+
+			await db.collection('project').insertMany(SeedData.projects);
+			console.log('"project" seed data inserted');
 		}
 
 		if (!collectionNames.has('project_role')) {
@@ -60,12 +66,8 @@ async function connectAndConfigureDB() {
 			console.log('"task" collection created');
 		}
 
-		// seed data
-		await db.collection('user').insertMany(SeedData.users);
-		await db.collection('project').insertMany(SeedData.projects);
-
 	} catch (err) {
-		console.error(err);
+		console.error(err.writeErrors[0]);
 		process.exit();
 	}
 }

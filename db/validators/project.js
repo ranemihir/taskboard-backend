@@ -10,7 +10,7 @@ module.exports = {
 				name: {
 					bsonType: 'string',
 					minLength: 3,
-					maxLength: 15
+					maxLength: 40
 				},
 				description: {
 					bsonType: 'string',
@@ -21,7 +21,9 @@ module.exports = {
 					bsonType: 'array',
 					items: {
 						bsonType: 'objectId',
-						uniqueItems: true
+						uniqueItems: true,
+						minItems: 1,
+						maxItems: 10
 					}
 				},
 				statuses: {
@@ -38,7 +40,7 @@ module.exports = {
 							},
 							name: {
 								bsonType: 'string',
-								minLength: 3,
+								minLength: 1,
 								maxLength: 40
 							}
 						}
@@ -55,7 +57,7 @@ module.exports = {
 						uniqueItems: true
 					}
 				}
-			},
+			}
 		}
 	}
 };
