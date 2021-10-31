@@ -56,14 +56,14 @@ router.get('/projects/:_id', async (req, res) => {
 router.post('/projects/:_id/update', async (req, res) => {
 	try {
 		const projectId = req.params._id;
-		const { name, description, adminUserIds } = req.body;
+		const { name, description, adminUserIds, invites } = req.body;
 		const userId = req.user._id;
 
-		if (!(name || description)) {
+		if (!(name || description || (adminUserIds && adminUserIds.length > 0) || invites)) {
 			return res.status(400).send('Invalid parameters provided');
 		}
 
-		await Project.update(projectId, userId, adminUserIds, name, description);
+		await Project.update(projectId, userId, adminUserIds, name, description, invites);
 
 		res.status(200).json({
 			_id: projectId,

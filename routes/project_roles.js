@@ -5,11 +5,18 @@ const { ProjectRole, Project, User } = require('./../model');
 router.post('project_roles/0/create', async (req, res) => {
 	try {
 		const userId = req.user._id;
+		const userEmail = req.user.email;
 		const { projectId } = req.params;
 
-		const createProjectResult = await ProjectRole.create(userId, projectId);
+		if (!(await Project.checkIfEmailIsInvited(userEmail))) {
+			return res.status(401).send('Unauthorised request');
+		}
 
-		res.status(200).json(createProjectResult);
+		const createProjectRoleResult = await ProjectRole.create(userId, projectId);
+
+		await Project.removeUserFromInvites(projectId, userEmail);
+
+		res.status(200).json(createProjectRoleResult);
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();

@@ -33,6 +33,20 @@ async function get(projectId) {
 	return project;
 }
 
+async function checkIfEmailIsInvited(projectId, email) {
+	const findProjectCursor = await projectCollection.find({
+		_id: new ObjectId(projectId)
+	});
+
+	const project = await findProjectCursor.next();
+
+	if (project.invites.includes(email)) {
+		return true;
+	}
+
+	return false;
+}
+
 async function checkIfUserIsAdmin(projectId, userId) {
 	const findAdminCursor = await projectCollection.find({
 		_id: new ObjectId(projectId),
@@ -46,7 +60,23 @@ async function checkIfUserIsAdmin(projectId, userId) {
 	return true;
 }
 
-async function update(projectId, adminUserId, adminUserIds, name, description) {
+async function removeUserFromInvites(projectId, email) {
+	const removeUserFromInvitesCursor = await projectCollection.updateOne({
+		_id: new ObjectId(projectId),
+	}, {
+		$pull: {
+			invites: email
+		}
+	});
+
+	if (!removeUserFromInvitesCursor.acknowledged) {
+		throw new Error('Error occurred while removing user email from invites');
+	}
+
+	return true;
+}
+
+async function update(projectId, adminUserId, adminUserIds, name, description, invites) {
 	const updateProjectCursor = await projectCollection.updateOne({
 		_id: new ObjectId(projectId),
 		adminUserIds: new ObjectId(adminUserId)
@@ -54,7 +84,8 @@ async function update(projectId, adminUserId, adminUserIds, name, description) {
 		$set: {
 			name,
 			description,
-			adminUserIds: adminUserIds.map(userId => new ObjectId(userId))
+			adminUserIds: adminUserIds.map(userId => new ObjectId(userId)),
+			invites: invites.map(userId => new ObjectId(userId))
 		}
 	});
 
@@ -99,6 +130,8 @@ module.exports = {
 	create,
 	get,
 	checkIfUserIsAdmin,
+	checkIfEmailIsInvited,
+	removeUserFromInvites,
 	update,
 	del
 };

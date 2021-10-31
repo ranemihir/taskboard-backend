@@ -48,7 +48,10 @@ module.exports = {
 				invites: {
 					bsonType: 'array',
 					items: {
-						bsonType: 'objectId',
+						bsonType: 'string',
+						pattern: '^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$',
+						minLength: 5,
+						maxLength: 40,
 						uniqueItems: true
 					}
 				}

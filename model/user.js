@@ -3,6 +3,19 @@ const ObjectId = require('mongodb').ObjectId;
 const userView = db.collection('userView');
 const userCollection = db.collection('user');
 
+async function getUsers(userIds) {
+	const findUserCursor = userView.find({
+		_id: {
+			$in: userIds.map(userId => new ObjectId(userId))
+		}
+	});
+
+	const users = await findUserCursor.toArray();
+
+	return users;
+}
+
+
 async function create(firstName, lastName, email, encryptedPassword, token) {
 	const createUserCursor = await userCollection.insertOne({
 		firstName,
@@ -33,18 +46,6 @@ async function get(userId) {
 	}
 
 	return user;
-}
-
-async function getUsers(userIds) {
-	const findUserCursor = userView.find({
-		_id: {
-			$in: userIds.map(userId => new ObjectId(userId))
-		}
-	});
-
-	const users = await findUserCursor.toArray();
-
-	return users;
 }
 
 async function getByEmail(email) {
