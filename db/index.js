@@ -6,6 +6,8 @@ const {
 	taskSchema
 } = require('./validators');
 
+const SeedData = require('./seed_data');
+
 const client = new MongoClient(process.env.MONGO_CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function connectAndConfigureDB() {
@@ -57,6 +59,10 @@ async function connectAndConfigureDB() {
 			await db.createCollection('task', taskSchema);
 			console.log('"task" collection created');
 		}
+
+		// seed data
+		await db.collection('user').insertMany(SeedData.users);
+		await db.collection('project').insertMany(SeedData.projects);
 
 	} catch (err) {
 		console.error(err);

@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const { ProjectRole, Project, User } = require('./../model');
 
-router.post('project_roles/0/create', async (req, res) => {
+router.post('projects/:projectId/accept_invitation', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const userEmail = req.user.email;
@@ -23,7 +23,7 @@ router.post('project_roles/0/create', async (req, res) => {
 	}
 });
 
-router.get('project/:projectId/project_roles', async (req, res) => {
+router.get('projects/:projectId/project_roles', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId } = req.params;
