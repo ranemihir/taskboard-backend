@@ -51,9 +51,9 @@ router.post('projects/:projectId/tasks/:taskId/update', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId, taskId } = req.params;
-		const { title, description, dueDate, priority } = req.body;
+		const { title, description, dueDate, priority, statusId } = req.body;
 
-		if (!(title || description || dueDate || priority)) {
+		if (!(title || description || dueDate || priority || statusId)) {
 			return res.status(400).send('No field to update provided');
 		}
 
@@ -64,7 +64,11 @@ router.post('projects/:projectId/tasks/:taskId/update', async (req, res) => {
 		await Task.update(taskId, title, description, priority, dueDate);
 
 		res.status(200).json({
-			_id: taskId
+			_id: taskId,
+			title,
+			description,
+			dueDate,
+			priority
 		});
 	} catch (err) {
 		console.error(err);
@@ -88,7 +92,8 @@ router.post('projects/:projectId/tasks/:taskId/move/:statusId', async (req, res)
 		await Task.moveTaskToStatusId(taskId, statusId);
 
 		res.status(200).json({
-			_id: taskId
+			_id: taskId,
+			statusId
 		});
 	} catch (err) {
 		console.error(err);
@@ -108,9 +113,7 @@ router.post('projects/:projectId/tasks/:taskId/delete', async (req, res) => {
 
 		await Task.del(taskId);
 
-		res.status(200).json({
-			_id: taskId
-		});
+		res.status(200).send(taskId);
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();

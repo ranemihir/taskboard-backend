@@ -43,6 +43,10 @@ router.get('/projects/:_id', async (req, res) => {
 		const project = await Project.get(projectId);
 
 		if (project && (await ProjectRole.find(userId, projectId))) {
+			if (!(project.adminUserIds.include(userId))) {
+				delete project.invites;
+			}
+
 			return res.status(200).json(project);
 		}
 
@@ -67,6 +71,10 @@ router.post('/projects/:_id/update', async (req, res) => {
 
 		res.status(200).json({
 			_id: projectId,
+			name,
+			description,
+			adminUserIds,
+			invites
 		});
 	} catch (err) {
 		console.error(err);
@@ -81,9 +89,7 @@ router.post('/projects/:_id/delete', async (req, res) => {
 
 		await Project.del(projectId, userId);
 
-		return res.status(200).json({
-			_id: projectId
-		});
+		return res.status(200).send(projectId);
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();

@@ -12,11 +12,11 @@ router.post('projects/:projectId/accept_invitation', async (req, res) => {
 			return res.status(401).send('Unauthorised request');
 		}
 
-		const createProjectRoleResult = await ProjectRole.create(userId, projectId);
+		const projectRole = await ProjectRole.create(userId, projectId);
 
 		await Project.removeUserFromInvites(projectId, userEmail);
 
-		res.status(200).json(createProjectRoleResult);
+		res.status(200).json(projectRole);
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();
@@ -35,7 +35,7 @@ router.get('projects/:projectId/project_roles', async (req, res) => {
 			return res.status(401).send('Unauthorised request');
 		}
 
-		const usersMap = await (await User.getUsers(userIds)).map(u => {
+		const usersMap = (await User.getUsers(userIds)).map(u => {
 			const userMap = {};
 
 			userMap[u._id] = {
@@ -78,12 +78,13 @@ router.post('project_roles/:projectRoleId/update', async (req, res) => {
 	try {
 		// const userId = req.user._id;
 		const { projectRoleId } = req.params;
-		const { authorisedStatuses } = req.body;
+		const { authorisedStatusIds } = req.body;
 
-		await ProjectRole.updateAuthorisedStatuses(projectRoleId, authorisedStatuses);
+		await ProjectRole.updateAuthorisedStatusIds(projectRoleId, authorisedStatusIds);
 
 		res.status(200).json({
-			_id: projectRoleId
+			_id: projectRoleId,
+			authorisedStatusIds
 		});
 	} catch (err) {
 		console.error(err);
@@ -102,7 +103,7 @@ router.post('project_roles/:projectRoleId/delete', async (req, res) => {
 			await ProjectRole.del(projectRoleId, userId);
 		}
 
-		res.status(200).send({ _id: projectRoleId });
+		res.status(200).send(projectRoleId);
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();
