@@ -43,7 +43,7 @@ router.get('/projects/:_id', async (req, res) => {
 		const project = await Project.get(projectId);
 
 		if (project && (await ProjectRole.find(userId, projectId))) {
-			if (!(project.adminUserIds.include(userId))) {
+			if (!(project.adminUserIds.includes(userId))) {
 				delete project.invites;
 			}
 

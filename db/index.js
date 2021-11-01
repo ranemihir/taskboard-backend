@@ -59,6 +59,9 @@ async function connectAndConfigureDB() {
 		if (!collectionNames.has('project_role')) {
 			await db.createCollection('project_role', projectRoleSchema);
 			console.log('"project role" collection created');
+
+			await db.collection('project_role').insertMany(SeedData.projectRoles);
+			console.log('"project role" seed data inserted');
 		}
 
 		if (!collectionNames.has('task')) {

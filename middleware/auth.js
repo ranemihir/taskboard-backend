@@ -89,10 +89,7 @@ authRouter.post('/login', async (req, res) => {
 			lastName: user.lastName,
 			email: user.email,
 			token,
-			projectRoles: projectRolesOfUser.map(projectRole => ({
-				projectId: projectRole.projectId,
-				authorisedStatusIds: projectRole.authorisedStatusIds
-			}))
+			projectRoles: projectRolesOfUser
 		});
 	} catch (err) {
 		console.error(err);
