@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt');
 const authRouter = Router();
 const { User, ProjectRole } = require('./../model');
 
+
+const EXPIRY = 3 * (24 * 60 * 60) * 1000;
+
 authRouter.post('/signup', async (req, res) => {
 	try {
 		const { firstName, lastName, email, password } = req.body;
@@ -40,13 +43,18 @@ authRouter.post('/signup', async (req, res) => {
 
 		await User.updateToken(user._id, token);
 
+		res.cookie('token', token, {
+			maxAge: EXPIRY,
+			// secure: true,
+			httpOnly: true,
+			sameSite: 'lax'
+		});
+
 		res.status(200).json({
 			_id: user._id,
 			firstName,
 			lastName,
-			email,
-			token,
-
+			email
 		});
 	} catch (err) {
 		console.error(err);
@@ -81,6 +89,13 @@ authRouter.post('/login', async (req, res) => {
 
 		await User.updateToken(user._id, token);
 
+		res.cookie('token', token, {
+			maxAge: EXPIRY,
+			// secure: true,
+			httpOnly: true,
+			sameSite: 'lax'
+		});
+
 		const projectRolesOfUser = await ProjectRole.getAllProjectRolesOfUser(user._id);
 
 		res.status(200).json({
@@ -88,7 +103,6 @@ authRouter.post('/login', async (req, res) => {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			email: user.email,
-			token,
 			projectRoles: projectRolesOfUser
 		});
 	} catch (err) {
@@ -99,7 +113,7 @@ authRouter.post('/login', async (req, res) => {
 
 const verifyToken = (req, res, next) => {
 	try {
-		const token = req.headers['x-access-token'];
+		const token = req.cookies['token'];
 
 		if (!token) {
 			return res.status(403).send('Access token is required for authentication');
@@ -125,5 +139,6 @@ const verifyToken = (req, res, next) => {
 		res.status(500).end();
 	}
 };
+
 
 module.exports = { authRouter, verifyToken };
