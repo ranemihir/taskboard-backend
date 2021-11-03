@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const { ProjectRole, Project, User } = require('./../model');
 
-router.post('projects/:projectId/accept_invitation', async (req, res) => {
+router.post('/projects/:projectId/accept_invitation', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const userEmail = req.user.email;
@@ -23,7 +23,7 @@ router.post('projects/:projectId/accept_invitation', async (req, res) => {
 	}
 });
 
-router.get('projects/:projectId/project_roles', async (req, res) => {
+router.get('/projects/:projectId/project_roles', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId } = req.params;
@@ -62,7 +62,7 @@ router.get('projects/:projectId/project_roles', async (req, res) => {
 	}
 });
 
-router.get('project_roles', async (req, res) => {
+router.get('/project_roles', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const projectRoles = await ProjectRole.getAllProjectRolesOfUser(userId);
@@ -74,7 +74,7 @@ router.get('project_roles', async (req, res) => {
 	}
 });
 
-router.post('project_roles/:projectRoleId/update', async (req, res) => {
+router.post('/project_roles/:projectRoleId/update', async (req, res) => {
 	try {
 		// const userId = req.user._id;
 		const { projectRoleId } = req.params;
@@ -92,7 +92,7 @@ router.post('project_roles/:projectRoleId/update', async (req, res) => {
 	}
 });
 
-router.post('project_roles/:projectRoleId/delete', async (req, res) => {
+router.post('/project_roles/:projectRoleId/delete', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId, projectRoleId } = req.params;

@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const { Task, ProjectRole, Project } = require('./../model');
 
-router.post('projects/:projectId/tasks/0/create', async (req, res) => {
+router.post('/projects/:projectId/tasks/0/create', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { title, statusId } = req.body;
@@ -25,7 +25,7 @@ router.post('projects/:projectId/tasks/0/create', async (req, res) => {
 	}
 });
 
-router.get('projects/:projectId/tasks/:taskId', async (req, res) => {
+router.get('/projects/:projectId/tasks/:taskId', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId, taskId } = req.params;
@@ -47,7 +47,68 @@ router.get('projects/:projectId/tasks/:taskId', async (req, res) => {
 	}
 });
 
-router.post('projects/:projectId/tasks/:taskId/update', async (req, res) => {
+router.get('/projects/:projectId/tasks', async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const { projectId } = req.params;
+
+		if (!(await ProjectRole.find(userId, projectId))) {
+			return res.status(401).send('Unauthorised access');
+		}
+
+		const tasks = await Task.getAllTasksFromProject(projectId);
+
+		if (!tasks) {
+			return res.status(404).end();
+		}
+
+		res.status(200).json(tasks);
+	} catch (err) {
+		console.error(err);
+		res.status(500).end();
+	}
+});
+
+router.get('/projects/:projectId/assigned_tasks', async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const { projectId } = req.params;
+
+		if (!(await ProjectRole.find(userId, projectId))) {
+			return res.status(401).send('Unauthorised access');
+		}
+
+		const tasks = await Task.getAssignedTasksFromProject(projectId);
+
+		if (!tasks) {
+			return res.status(404).end();
+		}
+
+		res.status(200).json(tasks);
+	} catch (err) {
+		console.error(err);
+		res.status(500).end();
+	}
+});
+
+router.get('/assigned_tasks', async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		const tasks = await Task.getAllAssignedTasks(userId);
+
+		if (!tasks) {
+			return res.status(404).end();
+		}
+
+		res.status(200).json(tasks);
+	} catch (err) {
+		console.error(err);
+		res.status(500).end();
+	}
+});
+
+router.post('/projects/:projectId/tasks/:taskId/update', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId, taskId } = req.params;
@@ -76,7 +137,7 @@ router.post('projects/:projectId/tasks/:taskId/update', async (req, res) => {
 	}
 });
 
-router.post('projects/:projectId/tasks/:taskId/move/:statusId', async (req, res) => {
+router.post('/projects/:projectId/tasks/:taskId/move/:statusId', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId, taskId, statusId } = req.params;
@@ -101,7 +162,7 @@ router.post('projects/:projectId/tasks/:taskId/move/:statusId', async (req, res)
 	}
 });
 
-router.post('projects/:projectId/tasks/:taskId/delete', async (req, res) => {
+router.post('/projects/:projectId/tasks/:taskId/delete', async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const { projectId, taskId } = req.params;

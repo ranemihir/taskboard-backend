@@ -27,6 +27,7 @@ authRouter.post('/signup', async (req, res) => {
 			firstName,
 			lastName,
 			email,
+			token,
 			encryptedPassword
 		);
 
@@ -103,6 +104,7 @@ authRouter.post('/login', async (req, res) => {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			email: user.email,
+			token,
 			projectRoles: projectRolesOfUser
 		});
 	} catch (err) {
@@ -113,7 +115,8 @@ authRouter.post('/login', async (req, res) => {
 
 const verifyToken = (req, res, next) => {
 	try {
-		const token = req.cookies['token'];
+		// const token = req.cookies['token'];
+		const token = req.headers['token'];
 
 		if (!token) {
 			return res.status(403).send('Access token is required for authentication');

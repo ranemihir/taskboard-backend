@@ -67,6 +67,16 @@ async function getAssignedTasksFromProject(userId, projectId) {
 	return assignedTasksFromProject;
 }
 
+async function getAllTasksFromProject(projectId) {
+	const findAllTasksOfProjectCursor = taskCollection.find({
+		projectId: new ObjectId(projectId)
+	});
+
+	const allTasksOfProject = await findAllTasksOfProjectCursor.toArray();
+
+	return allTasksOfProject;
+}
+
 async function update(taskId, title, description, priority, dueDate) {
 	const updateTaskCursor = await taskCollection.updateOne({
 		_id: new ObjectId(taskId)
@@ -137,6 +147,7 @@ module.exports = {
 	checkIfTaskIsAssigned,
 	getAllAssignedTasks,
 	getAssignedTasksFromProject,
+	getAllTasksFromProject,
 	update,
 	moveTaskToStatusId,
 	assignTask,
