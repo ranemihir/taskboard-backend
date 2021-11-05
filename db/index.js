@@ -67,10 +67,13 @@ async function connectAndConfigureDB() {
 		if (!collectionNames.has('task')) {
 			await db.createCollection('task', taskSchema);
 			console.log('"task" collection created');
+
+			db.collection('task').insertMany(SeedData.tasks);
+			console.log('"tasks" seed data inserted');
 		}
 
 	} catch (err) {
-		console.error(err.writeErrors[0]);
+		console.error(err);
 		process.exit();
 	}
 }

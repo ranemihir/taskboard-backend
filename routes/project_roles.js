@@ -28,34 +28,57 @@ router.get('/projects/:projectId/project_roles', async (req, res) => {
 		const userId = req.user._id;
 		const { projectId } = req.params;
 
+		if (!(await ProjectRole.find(userId, projectId))) {
+			return res.status(401).send('Unauthorised access');
+		}
+
 		const projectRoles = await ProjectRole.getAllProjectRolesOfProject(projectId);
 		const userIds = projectRoles.map(projectRole => projectRole.userId);
 
-		if (!userIds.includes(userId)) {
-			return res.status(401).send('Unauthorised request');
-		}
+		const usersMap = {};
 
-		const usersMap = (await User.getUsers(userIds)).map(u => {
-			const userMap = {};
-
-			userMap[u._id] = {
+		(await User.getUsers(userIds)).map(u => {
+			usersMap[u._id] = {
 				firstName: u.firstName,
 				lastName: u.lastName
 			};
-
-			return userMap;
 		});
+
+		delete usersMap[userId];
 
 		const projectRolesResult = projectRoles.map(projectRole => {
 			const userProperties = usersMap[projectRole.userId];
 
 			return {
 				...projectRole,
-				userProperties
+				...userProperties
 			};
 		});
 
 		res.status(200).json(projectRolesResult);
+	} catch (err) {
+		console.error(err);
+		res.status(500).end();
+	}
+});
+
+router.get('/projects/:projectId/project_roles/:projectRoleId', async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const { projectId, projectRoleId } = req.params;
+
+		if (!(await ProjectRole.find(userId, projectId))) {
+			return res.status(401).send('Unauthorised access');
+		}
+
+		const projectRole = await ProjectRole.get(projectRoleId);
+		const user = await User.get(projectRole.userId);
+
+		res.status(200).json({
+			...projectRole,
+			firstName: user.firstName,
+			lastName: user.lastName
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).end();

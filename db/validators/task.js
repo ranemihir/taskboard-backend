@@ -33,6 +33,16 @@ module.exports = {
 					bsonType: 'int',
 					minimum: 1,
 					maximum: 3
+				},
+				tags: {
+					bsonType: 'array',
+					items: {
+						bsonType: 'string',
+						uniqueItems: true,
+						minLength: 3,
+						maxLength: 20
+					},
+					maxItems: 3
 				}
 			}
 		}
