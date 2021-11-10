@@ -2,7 +2,7 @@ const { Router } = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const authRouter = Router();
-const { User, ProjectRole } = require('./../model');
+const { User } = require('./../model');
 
 
 const EXPIRY = 3 * (24 * 60 * 60) * 1000;
@@ -55,7 +55,8 @@ authRouter.post('/signup', async (req, res) => {
 			_id: user._id,
 			firstName,
 			lastName,
-			email
+			email,
+			token
 		});
 	} catch (err) {
 		console.error(err);
@@ -97,15 +98,12 @@ authRouter.post('/login', async (req, res) => {
 			sameSite: 'lax'
 		});
 
-		const projectRolesOfUser = await ProjectRole.getAllProjectRolesOfUser(user._id);
-
 		res.status(200).json({
 			_id: user._id,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			email: user.email,
-			token,
-			projectRoles: projectRolesOfUser
+			token
 		});
 	} catch (err) {
 		console.error(err);

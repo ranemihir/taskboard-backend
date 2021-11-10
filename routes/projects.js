@@ -2,6 +2,23 @@ const { Router } = require('express');
 const router = Router();
 const { Project, ProjectRole } = require('./../model');
 
+router.get('/', async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const projectRoles = await ProjectRole.getAllProjectRolesOfUser(userId);
+
+		const projectIds = projectRoles.map(projectRole => projectRole.projectId);
+		const projects = await Project.getProjects(projectIds);
+
+		return res.status(200).json({
+			projects,
+			projectRoles
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).end();
+	}
+});
 
 router.post('/projects/0/create', async (req, res) => {
 	try {

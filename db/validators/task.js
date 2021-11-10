@@ -18,7 +18,6 @@ module.exports = {
 				description: {
 					bsonType: 'string',
 					minLength: 1,
-					maxLength: 200
 				},
 				statusId: {
 					bsonType: 'objectId',

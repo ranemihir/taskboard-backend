@@ -33,6 +33,18 @@ async function get(projectId) {
 	return project;
 }
 
+async function getProjects(projectIds) {
+	const findProjectCursor = projectCollection.find({
+		_id: {
+			$in: projectIds
+		}
+	});
+
+	const projects = await findProjectCursor.toArray();
+
+	return projects;
+}
+
 async function checkIfEmailIsInvited(projectId, email) {
 	const findProjectCursor = await projectCollection.find({
 		_id: new ObjectId(projectId)
@@ -129,6 +141,7 @@ async function del(projectId, adminUserId) {
 module.exports = {
 	create,
 	get,
+	getProjects,
 	checkIfUserIsAdmin,
 	checkIfEmailIsInvited,
 	removeUserFromInvites,
